@@ -1,0 +1,7 @@
+(
+	name: "Heimdall",
+	pantheon: Norse,
+	domains: [Light, Protection],
+	description: "The ever-vigilant guardian, Heimdall can foresee enemy actions and protect allies with radiant light.",
+	model: "voxels/ally_units/norse_heimdall.vox",
+)

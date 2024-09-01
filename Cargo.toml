@@ -4,27 +4,14 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-bevy = { version = "0.14.1", default-features = false, features = [
-    "bevy_core_pipeline",
-    "multi_threaded",
-    "bevy_winit",
-    "bevy_audio",
-    "bevy_sprite",
-	"bevy_pbr",
-	"bevy_state",
-    "bevy_text",
-    "vorbis",
-    "png",
-	"hdr",
-	"smaa_luts",
-	"tonemapping_luts",
-	"x11",
-	"dynamic_linking"
-] }
-bevy_lunex = "0.2.3"
-bevy_vox_scene = "0.14.0"
+bevy = { version = "0.14.1" }
+bevy-inspector-egui = "0.25.2"
+bevy_common_assets = { version = "0.11.0", features = ["ron"] }
+bevy_ineffable = "0.6.0"
+bevy_vox_scene = { git = "https://github.com/Utsira/bevy_vox_scene.git", branch = "main" }
 log = { version = "*", features = ["max_level_debug", "release_max_level_warn"] }
 rand = "0.8.5"
+serde = "1.0.209"
 
 # Enable a small amount of optimization in the dev profile.
 [profile.dev]

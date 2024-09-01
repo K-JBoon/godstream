@@ -1,0 +1,7 @@
+(
+	name: "Artemis",
+	pantheon: Greek,
+	domains: [Hunting],
+	description: "Goddess of the hunt and the moon, Artemis can strike with precision from afar and cloak herself in shadows.",
+	model: "voxels/ally_units/greek_artemis.vox",
+)

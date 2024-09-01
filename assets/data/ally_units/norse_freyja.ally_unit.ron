@@ -1,0 +1,7 @@
+(
+	name: "Freyja",
+	pantheon: Norse,
+	domains: [Love, Fertility],
+	description: "Goddess of love and fertility, Freyja is also a fierce warrior who can inspire allies or devastate enemies.",
+	model: "voxels/ally_units/norse_freyja.vox",
+)

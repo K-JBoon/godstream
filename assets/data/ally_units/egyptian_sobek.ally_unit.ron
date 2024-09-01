@@ -1,0 +1,7 @@
+(
+	name: "Sobek",
+	pantheon: Egyptian,
+	domains: [Water, Strength],
+	description: "The crocodile god of the Nile, Sobek uses his immense physical power and command over water to dominate his enemies.",
+	model: "voxels/ally_units/egyptian_sobek.vox",
+)

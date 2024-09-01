@@ -1,0 +1,7 @@
+(
+	name: "Tyr",
+	pantheon: Norse,
+	domains: [War, Justice],
+	description: "The one-handed god of war and justice, Tyr is a symbol of bravery and fairness, striking down enemies with righteous fury.",
+	model: "voxels/ally_units/norse_tyr.vox",
+)

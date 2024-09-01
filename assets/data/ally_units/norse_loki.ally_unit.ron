@@ -1,0 +1,7 @@
+(
+	name: "Loki",
+	pantheon: Norse,
+	domains: [Trickery, Fire],
+	description: "The master of mischief and chaos, Loki uses his cunning and illusions to deceive and disrupt opponents.",
+	model: "voxels/ally_units/norse_loki.vox",
+)

@@ -1,0 +1,7 @@
+(
+	name: "Hecate",
+	pantheon: Greek,
+	domains: [Magic],
+	description: "The goddess of witchcraft and the night, Hecate can cast powerful curses and manipulate the battlefield with dark magic.",
+	model: "voxels/ally_units/greek_hecate.vox",
+)

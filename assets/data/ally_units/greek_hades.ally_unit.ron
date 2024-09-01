@@ -1,0 +1,7 @@
+(
+	name: "Hades",
+	pantheon: Greek,
+	domains: [Death, Wealth],
+	description: "The ruler of the underworld, Hades governs the dead and hoards vast riches, using them to empower himself.",
+	model: "voxels/ally_units/greek_hades.vox",
+)

@@ -1,0 +1,7 @@
+(
+	name: "Athena",
+	pantheon: Greek,
+	domains: [Wisdom, War],
+	description: "Goddess of wisdom and strategy, Athena is a master tactician who excels in both planning and combat.",
+	model: "voxels/ally_units/greek_athena.vox",
+)

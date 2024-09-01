@@ -1,22 +1,36 @@
 // Core Bevy imports
 pub(crate) use bevy::{
+    core_pipeline::{
+        bloom::BloomSettings,
+        experimental::taa::{TemporalAntiAliasBundle, TemporalAntiAliasPlugin},
+    },
+    pbr::ScreenSpaceAmbientOcclusionBundle,
     prelude::*,
-    render::render_resource::*,
     window::WindowMode,
-    sprite::Anchor,
+    input::common_conditions::*,
 };
-pub(crate) use bevy_lunex::prelude::*;
+
+// Input
+use bevy_ineffable::prelude::*;
+
+// Debugging
+use bevy_inspector_egui::quick::WorldInspectorPlugin;
 
 // Voxel handlers
-use bevy_vox_scene::{VoxScenePlugin, VoxelSceneBundle};
+use bevy_vox_scene::VoxScenePlugin;
+
+// Data
+use bevy_common_assets::ron::RonAssetPlugin;
 
 // Game Modules
+mod common;
+use common::*;
 mod states;
 use states::*;
-mod ui;
-use {ui::constants::*, ui::components::*, ui::routes::*};
 mod world;
 use world::*;
+mod unit;
+use unit::*;
 
 fn main() {
     let mut app = App::new();
@@ -30,119 +44,70 @@ fn main() {
             }),
             ..default()
         }),
-        VoxScenePlugin,
-        UiPlugin,
+        IneffablePlugin,
+        VoxScenePlugin::default(),
+        RonAssetPlugin::<AllyUnit>::new(&["ally_unit.ron"]),
     ))
-    .add_plugins(ComponentPlugin)
-    .add_plugins(RoutePlugin)
-    .add_systems(Startup, setup)
-    .insert_resource(CurrentStage { stage: Stage::ArenaGrass });
+    .add_systems(Startup, (setup, load_ally_units))
+    .insert_resource(AmbientLight {
+        color: Color::srgb_u8(255, 255, 255),
+        brightness: 0.75,
+    })
+    .insert_resource(Msaa::Off)
+    .add_plugins(TemporalAntiAliasPlugin);
+
+    // DEBUG UI
+    app.add_plugins(WorldInspectorPlugin::new())
+        .register_type::<CellPosition>();
+
+    // Game Resources
+    app.insert_resource(CurrentStage {
+        stage: Stage::ArenaBase,
+    });
 
     app.init_state::<AppState>();
     app.init_state::<GameState>();
 
     // Setup core game systems
-    app.add_systems(OnEnter(AppState::LoadingScreen), (
-        despawn_stage,
-        spawn_stage,
-    ));
+    app.add_systems(
+        OnEnter(AppState::LoadingScreen),
+        (despawn::<StageMarker>, spawn_stage)
+    );
+
+    app.add_systems(Update,
+        (
+            spawn_ally_unit.run_if(input_just_pressed(KeyCode::KeyQ)),
+        )
+    );
+
     app.run();
 }
 
 fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
-    // Set up the main camera, the UI will render into this,
-    // and the game world will be rendered into a texture that's
-    // rendered into this camera
-    commands.spawn((
-        MainUi,
-        Camera2dBundle {
-            transform: Transform::from_xyz(0.0, 0.0, 1000.0),
-            ..default()
-        },
-    ));
-
-    // Create a texture resource that our 3D camera will render to
-    let size = Extent3d {
-        width: 1920,
-        height: 1080,
-        ..default()
-    };
-
-    let mut image = Image {
-        texture_descriptor: TextureDescriptor {
-            label: None,
-            size,
-            dimension: TextureDimension::D2,
-            format: TextureFormat::Bgra8UnormSrgb,
-            mip_level_count: 1,
-            sample_count: 1,
-            usage: TextureUsages::TEXTURE_BINDING
-                | TextureUsages::COPY_DST
-                | TextureUsages::RENDER_ATTACHMENT,
-            view_formats: &[],
-        },
-        ..default()
-    };
-
-    // Initiate the image
-    image.resize(size);
-
-    // Add our texture to asset server and get a handle
-    let render_image = asset_server.add(image);
     commands
         .spawn((
             Camera3dBundle {
                 camera: Camera {
-                    order: -1,
-                    target: render_image.clone().into(),
                     clear_color: ClearColorConfig::Custom(Color::srgba(0.0, 0.0, 0.0, 0.0)),
                     hdr: true,
                     ..default()
                 },
-                transform: Transform::from_xyz(200.0, 200.0, 200.0).looking_at(Vec3::ZERO, Vec3::Y),
+                transform: Transform::from_xyz(950.0, 550.0, 950.0)
+                    .looking_at(Vec3::new(150.0, -200.0, 50.0), Vec3::Y),
                 ..default()
             },
-        ));
-
-    commands
-        .spawn((
-            MovableByCamera,
-            UiTreeBundle::<MainUi>::from(UiTree::new2d("Hello UI!")),
+            BloomSettings {
+                intensity: 0.1,
+                ..default()
+            },
+            TemporalAntiAliasBundle::default(),
+            EnvironmentMapLight {
+                diffuse_map: asset_server.load("pisa_diffuse.ktx2"),
+                specular_map: asset_server.load("pisa_specular.ktx2"),
+                intensity: 500.0,
+            },
         ))
-        .with_children(|ui| {
-            ui.spawn((
-                // Link the entity
-                UiLink::<MainUi>::path("Root"),
-                // Specify UI layout
-                UiLayout::window_full()
-                    .pos(Ab(20.0))
-                    .size(Rl(100.0) - Ab(40.0))
-                    .pack::<Base>(),
-            ));
+        .insert(ScreenSpaceAmbientOcclusionBundle::default());
 
-            ui.spawn((
-                // Link the entity
-                UiLink::<MainUi>::path("Root/Rectangle"),
-                // Specify UI layout
-                UiLayout::solid().size(Ab((1920.0, 1080.0))).pack::<Base>(),
-            ));
-
-            // Spawn 3D camera view
-            ui.spawn((
-                UiLink::<MainUi>::path("Root/Camera3d"),
-                UiLayout::solid()
-                    .size((1920.0, 1080.0))
-                    .scaling(Scaling::Fill)
-                    .pack::<Base>(),
-                UiImage2dBundle::from(render_image),
-                PickingPortal, // Send pick events through to the 3D camera
-            ));
-        });
-
-    // Enable the cursor
-    commands.spawn(CursorBundle::default());
-
-    // Show our UI
-    // TODO: this should be conditional on the state
-    commands.spawn(MyRoute);
+    commands.insert_resource(HoveredCellPosition(CellPosition(Vec2::new(0.0, 0.0))));
 }

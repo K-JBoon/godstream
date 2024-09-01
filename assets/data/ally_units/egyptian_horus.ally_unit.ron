@@ -1,0 +1,7 @@
+(
+	name: "Horus",
+	pantheon: Egyptian,
+	domains: [War, Protection],
+	description: "The falcon-headed god of kingship and war, Horus is a defender and a fierce warrior, shielding his allies and striking down foes.",
+	model: "voxels/ally_units/egyptian_horus.vox"
+)

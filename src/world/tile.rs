@@ -1,15 +1,19 @@
-use crate::*;
+use std::fmt;
 
 pub enum Tile {
-    GrassBlock,
-    WaterGrassBlock,
+    BlockGrass,
+    BattlefieldBlockAllyStone,
+    BattlefieldBlockEnemyStone,
 }
 
-impl ToString for Tile {
-    fn to_string(&self) -> String {
-        match self {
-            Tile::GrassBlock => "voxels/tiles.vox#GrassBlock".into(),
-            Tile::WaterGrassBlock => "voxels/tiles.vox#WaterGrassBlock".into(),
-        }
+impl fmt::Display for Tile {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let str: &str = match self {
+            Tile::BlockGrass => "voxels/tiles.vox#BlockGrass",
+            Tile::BattlefieldBlockAllyStone => "voxels/tiles.vox#BattlefieldBlockAllyStone",
+            Tile::BattlefieldBlockEnemyStone => "voxels/tiles.vox#BattlefieldBlockEnemyStone",
+        };
+
+        write!(f, "{}", str)
     }
 }

@@ -1,0 +1,7 @@
+(
+	name: "Isis",
+	pantheon: Egyptian,
+	domains: [Magic, Healing],
+	description: "The powerful sorceress and healer, Isis uses her magic to protect and restore her allies, turning the tide of battle.",
+	model: "voxels/ally_units/egyptian_isis.vox",
+)

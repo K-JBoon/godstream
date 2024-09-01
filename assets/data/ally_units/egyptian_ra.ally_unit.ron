@@ -1,0 +1,7 @@
+(
+	name: "Ra",
+	pantheon: Egyptian,
+	domains: [Light],
+	description: "The sun god, Ra illuminates the battlefield, burning enemies and rejuvenating allies with his divine light.",
+	model: "voxels/ally_units/egyptian_ra.vox",
+)

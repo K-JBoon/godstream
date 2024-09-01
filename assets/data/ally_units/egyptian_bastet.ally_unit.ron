@@ -1,0 +1,7 @@
+(
+	name: "Bastet",
+	pantheon: Egyptian,
+	domains: [Protection, Fertility],
+	description: "The cat goddess of home and fertility, Bastet protects her allies with fierce devotion and ensures the growth of her followers.",
+	model: "voxels/ally_units/egyptian_bastet.vox",
+)
