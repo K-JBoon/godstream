@@ -58,6 +58,7 @@ fn main() {
 
     // DEBUG UI
     app.add_plugins(WorldInspectorPlugin::new())
+        .register_type::<AllyUnit>()
         .register_type::<CellPosition>();
 
     // Game Resources

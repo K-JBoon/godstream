@@ -1,4 +1,5 @@
 use crate::*;
+use rand::seq::SliceRandom;
 use std::fmt;
 
 const UNITS: &[&str] = &[
@@ -31,7 +32,7 @@ const UNITS: &[&str] = &[
     "data/ally_units/norse_tyr.ally_unit.ron",
 ];
 
-#[derive(Component, Debug, Clone, serde::Deserialize, Asset, TypePath)]
+#[derive(Component, Debug, Clone, Reflect, serde::Deserialize, Asset)]
 pub struct AllyUnit {
     pub pantheon: Pantheon,
     pub domains: Vec<Domain>,
@@ -69,7 +70,10 @@ pub fn spawn_ally_unit(
     ally_units: Res<Assets<AllyUnit>>,
     ally_tiles: Query<(Entity, &Transform, &CellPosition), (With<BattlefieldMarker>, With<AllyMarker>, Without<OccupiedMarker>)>,
 ) {
-    let unit = ally_units.iter().last().unwrap().1;
+    let ids: Vec<AssetId::<AllyUnit>> = ally_units.ids().collect();
+    let random_id = ids.choose(&mut rand::thread_rng()).unwrap();
+
+    let unit = ally_units.get(*random_id).unwrap();
 
     for (tile, transform, cell_position) in ally_tiles.iter() {
         if cell_position.0.x == hovered_cell_position.0.0.x && cell_position.0.y == hovered_cell_position.0.0.y {
@@ -86,6 +90,7 @@ pub fn spawn_ally_unit(
                     transform: unit_transform,
                     ..default()
                 },
+                unit.clone()
             ));
 
             // Mark the tile as occupied
