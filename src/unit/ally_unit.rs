@@ -51,14 +51,14 @@ impl fmt::Display for AllyUnit {
     }
 }
 
-pub fn load_ally_units(
-    mut commands: Commands,
-    asset_server: Res<AssetServer>,
-) {
-    let units: Vec<Handle<AllyUnit>> = UNITS.iter().map(|path| {
-        let ally_unit_handle : Handle<AllyUnit> = asset_server.load(path.to_string());
-        ally_unit_handle
-    }).collect();
+pub fn load_ally_units(mut commands: Commands, asset_server: Res<AssetServer>) {
+    let units: Vec<Handle<AllyUnit>> = UNITS
+        .iter()
+        .map(|path| {
+            let ally_unit_handle: Handle<AllyUnit> = asset_server.load(path.to_string());
+            ally_unit_handle
+        })
+        .collect();
 
     commands.insert_resource(AllyUnits(units));
 }
@@ -68,30 +68,39 @@ pub fn spawn_ally_unit(
     asset_server: Res<AssetServer>,
     hovered_cell_position: Res<HoveredCellPosition>,
     ally_units: Res<Assets<AllyUnit>>,
-    ally_tiles: Query<(Entity, &Transform, &CellPosition), (With<BattlefieldMarker>, With<AllyMarker>, Without<OccupiedMarker>)>,
+    ally_tiles: Query<
+        (Entity, &Transform, &CellPosition),
+        (
+            With<BattlefieldMarker>,
+            With<AllyMarker>,
+            Without<OccupiedMarker>,
+        ),
+    >,
 ) {
-    let ids: Vec<AssetId::<AllyUnit>> = ally_units.ids().collect();
+    let ids: Vec<AssetId<AllyUnit>> = ally_units.ids().collect();
     let random_id = ids.choose(&mut rand::thread_rng()).unwrap();
 
     let unit = ally_units.get(*random_id).unwrap();
 
     for (tile, transform, cell_position) in ally_tiles.iter() {
-        if cell_position.0.x == hovered_cell_position.0.0.x && cell_position.0.y == hovered_cell_position.0.0.y {
+        if cell_position.0.x == hovered_cell_position.0 .0.x
+            && cell_position.0.y == hovered_cell_position.0 .0.y
+        {
             let mut unit_transform = *transform;
             unit_transform.rotate_axis(Dir3::Y, std::f32::consts::PI);
             unit_transform.translation.y += (TILE_SIZE as f32) / 2.0;
 
             commands.spawn((
                 AllyMarker,
+                UnitMarker,
                 CellPosition(cell_position.0),
                 Name::new(format!("Ally_{}", unit.name.clone())),
                 SceneBundle {
-                    scene: asset_server
-                        .load(unit.model.clone()),
+                    scene: asset_server.load(unit.model.clone()),
                     transform: unit_transform,
                     ..default()
                 },
-                unit.clone()
+                unit.clone(),
             ));
 
             // Mark the tile as occupied

@@ -18,5 +18,7 @@ fn setup_common_resources(mut commands: Commands) {
 }
 
 pub fn common_plugin(app: &mut App) {
-    app.add_systems(Startup,setup_common_resources);
+    app.add_systems(Startup, setup_common_resources);
+
+    app.register_type::<CellPosition>();
 }

@@ -44,10 +44,7 @@ pub fn spawn_stage(
                         let is_enemy = cell_z < BATTLEFIELD_HEIGHT;
 
                         // Generic components shared by all tiles on the battlefield
-                        let mut entity = commands.spawn((
-                            StageMarker,
-                            BattlefieldMarker,
-                        ));
+                        let mut entity = commands.spawn((StageMarker, BattlefieldMarker));
 
                         // Add the tile specific components,
                         // for position some things need to be inverted
@@ -58,8 +55,8 @@ pub fn spawn_stage(
                                 EnemyMarker,
                                 CellPosition(Vec2::new(
                                     (BATTLEFIELD_WIDTH - 1 - cell_x) as f32,
-                                    cell_z as f32)
-                                ),
+                                    cell_z as f32,
+                                )),
                                 SceneBundle {
                                     scene: asset_server
                                         .load(Tile::BattlefieldBlockEnemyStone.to_string()),
@@ -76,8 +73,9 @@ pub fn spawn_stage(
                                 AllyMarker,
                                 CellPosition(Vec2::new(
                                     cell_x as f32,
-                                    (BATTLEFIELD_HEIGHT - 1) as f32 - (cell_z - BATTLEFIELD_HEIGHT) as f32)
-                                ),
+                                    (BATTLEFIELD_HEIGHT - 1) as f32
+                                        - (cell_z - BATTLEFIELD_HEIGHT) as f32,
+                                )),
                                 SceneBundle {
                                     scene: asset_server
                                         .load(Tile::BattlefieldBlockAllyStone.to_string()),

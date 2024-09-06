@@ -1,9 +1,5 @@
 // Core Bevy imports
-pub(crate) use bevy::{
-    prelude::*,
-    window::WindowMode,
-    input::common_conditions::*,
-};
+pub(crate) use bevy::{input::common_conditions::*, prelude::*, window::WindowMode};
 
 // Audio
 use bevy_kira_audio::prelude::*;
@@ -46,57 +42,35 @@ fn main() {
         }),
         IneffablePlugin,
         VoxScenePlugin::default(),
-        RonAssetPlugin::<AllyUnit>::new(&["ally_unit.ron"]),
     ))
-    .add_systems(Startup, (setup, load_ally_units))
+    .add_systems(Startup, setup)
     .insert_resource(AmbientLight {
         color: Color::srgb_u8(255, 255, 255),
         brightness: 0.75,
     });
 
-    // Game Plugins
-    app.add_plugins((audio_plugin, common_plugin));
-
     // DEBUG UI
-    app.add_plugins(WorldInspectorPlugin::new())
-        .register_type::<AllyUnit>()
-        .register_type::<CellPosition>();
+    app.add_plugins(WorldInspectorPlugin::new());
 
-    // Game Resources
-    app.insert_resource(CurrentStage {
-        stage: Stage::ArenaBase,
-    });
+    // Game Plugins
+    app.add_plugins((common_plugin, audio_plugin, unit_plugin, stage_plugin));
 
+    // Game State
     app.init_state::<AppState>();
     app.init_state::<GameState>();
-
-    // Setup core game systems
-    app.add_systems(
-        OnEnter(AppState::LoadingScreen),
-        (despawn::<StageMarker>, spawn_stage)
-    );
-
-    app.add_systems(Update,
-        (
-            spawn_ally_unit.run_if(input_just_pressed(KeyCode::KeyQ)),
-        )
-    );
 
     app.run();
 }
 
 fn setup(mut commands: Commands) {
-    commands
-        .spawn((
-            Camera3dBundle {
-                camera: Camera {
-                    clear_color: ClearColorConfig::Custom(Color::srgba(0.0, 0.0, 0.0, 0.0)),
-                    hdr: true,
-                    ..default()
-                },
-                transform: Transform::from_xyz(950.0, 550.0, 950.0)
-                    .looking_at(Vec3::new(150.0, -200.0, 50.0), Vec3::Y),
-                ..default()
-            },
-        ));
+    commands.spawn((Camera3dBundle {
+        camera: Camera {
+            clear_color: ClearColorConfig::Custom(Color::srgba(0.0, 0.0, 0.0, 0.0)),
+            hdr: true,
+            ..default()
+        },
+        transform: Transform::from_xyz(950.0, 550.0, 950.0)
+            .looking_at(Vec3::new(150.0, -200.0, 50.0), Vec3::Y),
+        ..default()
+    },));
 }
