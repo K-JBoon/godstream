@@ -1,14 +1,12 @@
 // Core Bevy imports
 pub(crate) use bevy::{
-    core_pipeline::{
-        bloom::BloomSettings,
-        experimental::taa::{TemporalAntiAliasBundle, TemporalAntiAliasPlugin},
-    },
-    pbr::ScreenSpaceAmbientOcclusionBundle,
     prelude::*,
     window::WindowMode,
     input::common_conditions::*,
 };
+
+// Audio
+use bevy_kira_audio::prelude::*;
 
 // Input
 use bevy_ineffable::prelude::*;
@@ -25,6 +23,8 @@ use bevy_common_assets::ron::RonAssetPlugin;
 // Game Modules
 mod common;
 use common::*;
+mod audio;
+use audio::*;
 mod states;
 use states::*;
 mod world;
@@ -52,9 +52,10 @@ fn main() {
     .insert_resource(AmbientLight {
         color: Color::srgb_u8(255, 255, 255),
         brightness: 0.75,
-    })
-    .insert_resource(Msaa::Off)
-    .add_plugins(TemporalAntiAliasPlugin);
+    });
+
+    // Game Plugins
+    app.add_plugins((audio_plugin, common_plugin));
 
     // DEBUG UI
     app.add_plugins(WorldInspectorPlugin::new())
@@ -84,7 +85,7 @@ fn main() {
     app.run();
 }
 
-fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
+fn setup(mut commands: Commands) {
     commands
         .spawn((
             Camera3dBundle {
@@ -97,18 +98,5 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                     .looking_at(Vec3::new(150.0, -200.0, 50.0), Vec3::Y),
                 ..default()
             },
-            BloomSettings {
-                intensity: 0.1,
-                ..default()
-            },
-            TemporalAntiAliasBundle::default(),
-            EnvironmentMapLight {
-                diffuse_map: asset_server.load("pisa_diffuse.ktx2"),
-                specular_map: asset_server.load("pisa_specular.ktx2"),
-                intensity: 500.0,
-            },
-        ))
-        .insert(ScreenSpaceAmbientOcclusionBundle::default());
-
-    commands.insert_resource(HoveredCellPosition(CellPosition(Vec2::new(0.0, 0.0))));
+        ));
 }

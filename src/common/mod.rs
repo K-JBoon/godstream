@@ -12,3 +12,11 @@ pub fn despawn<T: Component>(mut commands: Commands, query: Query<Entity, With<T
         commands.entity(entity).despawn_recursive();
     }
 }
+
+fn setup_common_resources(mut commands: Commands) {
+    commands.insert_resource(HoveredCellPosition(CellPosition(Vec2::new(0.0, 0.0))));
+}
+
+pub fn common_plugin(app: &mut App) {
+    app.add_systems(Startup,setup_common_resources);
+}

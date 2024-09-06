@@ -1,0 +1,7 @@
+(
+    file: "sounds/music/ambient_chimes.mp3",
+
+	volume: 0.1,
+    loop_region: Some(Region(start: Seconds(0.0), end: EndOfAudio)),
+    fade_in_tween: Some(10000000),
+)

@@ -4,11 +4,38 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-bevy = { version = "0.14.1" }
+bevy = { version = "0.14.1", default-features = false, features = [
+    "animation",
+    "bevy_asset",
+    "bevy_state",
+    "bevy_color",
+    "bevy_gilrs",
+    "bevy_scene",
+    "bevy_winit",
+    "bevy_core_pipeline",
+    "bevy_pbr",
+    "bevy_gltf",
+    "bevy_render",
+    "bevy_sprite",
+    "bevy_text",
+    "bevy_ui",
+    "multi_threaded",
+    "png",
+    "hdr",
+    "x11",
+    "bevy_gizmos",
+    "tonemapping_luts",
+    "smaa_luts",
+    "default_font",
+    "webgl2",
+    "sysinfo_plugin",
+]}
+
 bevy-inspector-egui = "0.25.2"
 bevy_common_assets = { version = "0.11.0", features = ["ron"] }
 bevy_ineffable = "0.6.0"
-bevy_vox_scene = { git = "https://github.com/Utsira/bevy_vox_scene.git", branch = "main" }
+bevy_kira_audio = { version = "0.20.0", features = ["settings_loader", "mp3"] }
+bevy_vox_scene = { path = "../bevy_vox_scene" }
 log = { version = "*", features = ["max_level_debug", "release_max_level_warn"] }
 rand = "0.8.5"
 serde = "1.0.209"
