@@ -3,11 +3,11 @@ use rand::seq::SliceRandom;
 use std::fmt;
 
 const UNITS: &[&str] = &[
-    "data/ally_units/egyptian_anubis.ally_unit.ron",
+    // "data/ally_units/egyptian_anubis.ally_unit.ron",
     // "data/ally_units/egyptian_bastet.ally_unit.ron",
     // "data/ally_units/egyptian_horus.ally_unit.ron",
     // "data/ally_units/egyptian_isis.ally_unit.ron",
-    // "data/ally_units/egyptian_osiris.ally_unit.ron",
+    "data/ally_units/egyptian_osiris.ally_unit.ron",
     // "data/ally_units/egyptian_ra.ally_unit.ron",
     // "data/ally_units/egyptian_sekhmet.ally_unit.ron",
     // "data/ally_units/egyptian_sobek.ally_unit.ron",
@@ -95,11 +95,6 @@ pub fn spawn_ally_unit(
                 UnitMarker,
                 CellPosition(cell_position.0),
                 Name::new(format!("Ally_{}", unit.name.clone())),
-                SceneBundle {
-                    scene: asset_server.load(unit.model.clone()),
-                    transform: unit_transform,
-                    ..default()
-                },
                 unit.clone(),
             ));
 

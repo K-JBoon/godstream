@@ -4,14 +4,14 @@ pub(crate) use bevy::{input::common_conditions::*, prelude::*, window::WindowMod
 // Audio
 use bevy_kira_audio::prelude::*;
 
+// Tilesheet support
+use bevy_ecs_tilemap::prelude::*;
+
 // Input
 use bevy_ineffable::prelude::*;
 
 // Debugging
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
-
-// Voxel handlers
-use bevy_vox_scene::VoxScenePlugin;
 
 // Data
 use bevy_common_assets::ron::RonAssetPlugin;
@@ -32,22 +32,20 @@ fn main() {
     let mut app = App::new();
 
     app.add_plugins((
-        DefaultPlugins.set(WindowPlugin {
-            primary_window: Some(Window {
-                mode: WindowMode::BorderlessFullscreen,
-                resizable: false,
+        DefaultPlugins
+            .set(WindowPlugin {
+                primary_window: Some(Window {
+                    mode: WindowMode::BorderlessFullscreen,
+                    resizable: false,
+                    ..default()
+                }),
                 ..default()
-            }),
-            ..default()
-        }),
+            })
+            .set(ImagePlugin::default_nearest()),
         IneffablePlugin,
-        VoxScenePlugin::default(),
+        TilemapPlugin,
     ))
-    .add_systems(Startup, setup)
-    .insert_resource(AmbientLight {
-        color: Color::srgb_u8(255, 255, 255),
-        brightness: 0.75,
-    });
+    .add_systems(Startup, setup);
 
     // DEBUG UI
     app.add_plugins(WorldInspectorPlugin::new());
@@ -63,14 +61,5 @@ fn main() {
 }
 
 fn setup(mut commands: Commands) {
-    commands.spawn((Camera3dBundle {
-        camera: Camera {
-            clear_color: ClearColorConfig::Custom(Color::srgba(0.0, 0.0, 0.0, 0.0)),
-            hdr: true,
-            ..default()
-        },
-        transform: Transform::from_xyz(950.0, 550.0, 950.0)
-            .looking_at(Vec3::new(150.0, -200.0, 50.0), Vec3::Y),
-        ..default()
-    },));
+    commands.spawn(Camera2dBundle::default());
 }

@@ -1,5 +1,0 @@
-name = "Anubis"
-pantheon = "Egyptian"
-domains = ["Death", "Justice"]
-description = "The god of mummification and the afterlife, Anubis can weigh the souls of his enemies, weakening or banishing them."
-model = "assets/voxels/AllyUnits/egyptian_anubis.vox"
