@@ -1,9 +1,11 @@
-use rand::seq::SliceRandom;
 use std::collections::HashMap;
 use std::fmt;
 
 // Core Bevy imports
 pub(crate) use bevy::{input::common_conditions::*, prelude::*, window::WindowMode};
+
+// Loading state
+use bevy_asset_loader::prelude::*;
 
 // Input
 use bevy_ineffable::prelude::*;
@@ -25,8 +27,8 @@ mod states;
 use states::*;
 mod world;
 use world::*;
-mod unit;
-use unit::*;
+mod units;
+use units::*;
 
 fn main() {
     let mut app = App::new();
@@ -44,6 +46,10 @@ fn main() {
             .set(ImagePlugin::default_nearest()),
         IneffablePlugin,
     ))
+    .init_state::<AppState>()
+    .add_loading_state(
+        LoadingState::new(AppState::AssetLoading).continue_to_state(AppState::PrepareStage),
+    )
     .add_systems(Startup, setup);
 
     // DEBUG UI
@@ -57,10 +63,6 @@ fn main() {
         unit_plugin,
         stage_plugin,
     ));
-
-    // Game State
-    app.init_state::<AppState>();
-    app.init_state::<GameState>();
 
     app.run();
 }

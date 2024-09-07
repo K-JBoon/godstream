@@ -6,6 +6,8 @@ pub mod markers;
 pub use markers::*;
 pub mod resources;
 pub use resources::*;
+pub mod spritesheet;
+pub use spritesheet::*;
 
 pub fn despawn<T: Component>(mut commands: Commands, query: Query<Entity, With<T>>) {
     for entity in query.iter() {

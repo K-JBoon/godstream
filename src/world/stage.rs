@@ -1,114 +1,176 @@
 use super::*;
 
-const BATTLEFIELD_WIDTH: u32 = 16;
-const BATTLEFIELD_HEIGHT: u32 = 8;
+#[derive(Component, Debug, Clone, Reflect, serde::Deserialize)]
+#[serde(untagged)]
+pub enum StageCell {
+    Position(SpritesheetCellPosition),
+    Name(String),
+}
 
-pub enum Stage {
-    ArenaBase,
+#[derive(Component, Debug, Clone, Reflect, serde::Deserialize)]
+pub enum LayerType {
+    Background,
+    AllyStage,
+    EnemyStage,
+    Foreground,
+}
+
+// Structure for a single layer in the stage
+#[derive(Component, Debug, Clone, Reflect, serde::Deserialize)]
+pub struct StageLayer {
+    pub tilesheet_name: String,
+    pub layer_type: LayerType,
+    pub width: u32,
+    pub height: u32,
+    pub x_offset: f32,
+    pub y_offset: f32,
+    pub cells: Vec<Vec<StageCell>>,
+}
+
+// Structure for the entire stage
+#[derive(Component, Debug, Clone, Reflect, serde::Deserialize)]
+pub struct Stage {
+    pub name: String,
+    pub layers: Vec<StageLayer>,
+}
+
+#[derive(Debug, Clone, Reflect, serde::Deserialize, Asset)]
+pub struct StageCollection(HashMap<String, Stage>);
+
+#[derive(AssetCollection, Resource)]
+pub struct StageAssets {
+    #[asset(path = "data/stages/", collection)]
+    _folder: Vec<UntypedHandle>,
+}
+
+// Implementation for Stage
+impl Stage {
+    fn spawn(
+        &self,
+        mut commands: Commands,
+        asset_server: Res<AssetServer>,
+        tilesheet_collections: Res<Assets<TilesheetCollection>>,
+    ) {
+        self.layers
+            .iter()
+            .enumerate()
+            .for_each(|(layer_index, layer)| {
+                if let Some(tilesheet) =
+                    get_tilesheet_by_name(layer.tilesheet_name.clone(), &tilesheet_collections)
+                {
+                    let texture_handle: Handle<Image> =
+                        asset_server.load(tilesheet.spritesheet.asset_path.clone());
+
+                    let map_size = TilemapSize {
+                        x: layer.width,
+                        y: layer.height,
+                    };
+                    let tilemap_entity = commands.spawn_empty().id();
+                    let mut tile_storage = TileStorage::empty(map_size);
+
+                    layer.cells.iter().enumerate().for_each(|(y, row)| {
+                        row.iter().enumerate().for_each(|(x, cell)| {
+                            // Make sure we don't go out of bounds if the data has been
+                            // poorly defined
+                            if (x as u32) < layer.width && (y as u32) < layer.height {
+                                let tile_pos = TilePos {
+                                    x: x as u32,
+                                    y: y as u32,
+                                };
+                                let tile_entity = commands
+                                    .spawn(TileBundle {
+                                        position: tile_pos,
+                                        tilemap_id: TilemapId(tilemap_entity),
+                                        ..Default::default()
+                                    })
+                                    .id();
+                                tile_storage.set(&tile_pos, tile_entity);
+
+                                match cell {
+                                    StageCell::Name(cell_name) => {
+                                        commands.entity(tile_entity).insert(TileTextureIndex(
+                                            tilesheet.name_to_index(cell_name),
+                                        ));
+                                    }
+                                    StageCell::Position(position) => {
+                                        commands.entity(tile_entity).insert(TileTextureIndex(
+                                            tilesheet.position_to_index(position.0, position.1),
+                                        ));
+                                    }
+                                };
+                            }
+                        });
+                    });
+
+                    match layer.layer_type {
+                        LayerType::AllyStage => {
+                            commands.entity(tilemap_entity).insert(AllyMarker);
+                        }
+                        LayerType::EnemyStage => {
+                            commands.entity(tilemap_entity).insert(EnemyMarker);
+                        }
+                        _ => (),
+                    };
+
+                    let tile_size = TilemapTileSize {
+                        x: tilesheet.spritesheet.tile_width,
+                        y: tilesheet.spritesheet.tile_height,
+                    };
+                    let grid_size = tile_size.into();
+                    let map_type = TilemapType::default();
+
+                    commands.entity(tilemap_entity).insert((
+                        Name::new("TileBundle"),
+                        StageMarker,
+                        TilemapBundle {
+                            grid_size,
+                            map_type,
+                            size: map_size,
+                            storage: tile_storage,
+                            texture: TilemapTexture::Single(texture_handle),
+                            tile_size,
+                            transform: get_tilemap_center_transform(
+                                &map_size,
+                                &grid_size,
+                                &map_type,
+                                layer_index as f32,
+                            ) * Transform::from_xyz(
+                                layer.x_offset * tilesheet.spritesheet.tile_width,
+                                layer.y_offset * tilesheet.spritesheet.tile_height,
+                                1.0,
+                            ),
+                            ..Default::default()
+                        },
+                    ));
+                }
+            });
+    }
+}
+
+pub fn get_stage_by_name(
+    name: String,
+    stage_collections: &Res<Assets<StageCollection>>,
+) -> Option<Stage> {
+    if let Some((_, b)) = stage_collections
+        .iter()
+        .find(|(_, collection)| collection.0.contains_key(&name))
+    {
+        b.0.get(&name).cloned()
+    } else {
+        None
+    }
 }
 
 pub fn spawn_stage(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
-    current_stage: Res<CurrentStage>,
+    stage_collections: Res<Assets<StageCollection>>,
+    tilesheet_collections: Res<Assets<TilesheetCollection>>,
     mut next_app_state: ResMut<NextState<AppState>>,
 ) {
-    match current_stage.stage {
-        Stage::ArenaBase => {
-            let tilesheet = Tilesheet {
-                asset_path: String::from("spritesheets/maps/hell.png"),
-                tile_width: 48.0,
-                tile_height: 48.0,
-                columns: 16,
-                rows: 16,
-            };
-
-            let texture_handle: Handle<Image> = asset_server.load(tilesheet.asset_path.clone());
-
-            let map_size = TilemapSize { x: 32, y: 32 };
-            let tilemap_entity = commands.spawn_empty().id();
-            let mut tile_storage = TileStorage::empty(map_size);
-
-            let margin_width = (map_size.x - BATTLEFIELD_WIDTH) / 2;
-            let margin_height = (map_size.y - (BATTLEFIELD_HEIGHT * 2)) / 2;
-
-            for x in 0..map_size.x {
-                for y in 0..map_size.y {
-                    let tile_pos = TilePos { x, y };
-                    let tile_entity = commands
-                        .spawn((
-                            StageMarker,
-                            TileBundle {
-                                position: tile_pos,
-                                tilemap_id: TilemapId(tilemap_entity),
-                                ..Default::default()
-                            },
-                        ))
-                        .id();
-                    tile_storage.set(&tile_pos, tile_entity);
-
-                    if (x < margin_width || x >= map_size.x - margin_width)
-                        || (y < margin_height || y >= map_size.y - margin_height)
-                    {
-                        commands
-                            .entity(tile_entity)
-                            .insert(TileTextureIndex(tilesheet.position_to_index(14, 1)));
-                    } else {
-                        // Spawn center battlefield
-                        let cell_x = x - margin_width;
-                        let cell_y = margin_height.abs_diff(y);
-                        let is_enemy = cell_y < BATTLEFIELD_HEIGHT;
-
-                        // Generic components shared by all tiles on the battlefield
-                        // tile_entity.insert((StageMarker, BattlefieldMarker));
-
-                        // Add the tile specific components,
-                        // for position some things need to be inverted
-                        // to have the expected coordinates on both sides,
-                        // see CellPosition
-                        if is_enemy {
-                            commands.entity(tile_entity).insert((
-                                TileTextureIndex(tilesheet.position_to_index(5, 0)),
-                                EnemyMarker,
-                                CellPosition(Vec2::new(
-                                    (BATTLEFIELD_WIDTH - 1 - cell_x) as f32,
-                                    cell_y as f32,
-                                )),
-                            ));
-                        } else {
-                            commands.entity(tile_entity).insert((
-                                TileTextureIndex(tilesheet.position_to_index(8, 2)),
-                                AllyMarker,
-                                CellPosition(Vec2::new(
-                                    cell_x as f32,
-                                    (BATTLEFIELD_HEIGHT - 1) as f32
-                                        - (cell_y - BATTLEFIELD_HEIGHT) as f32,
-                                )),
-                            ));
-                        }
-                    }
-                }
-            }
-
-            let tile_size = TilemapTileSize {
-                x: tilesheet.tile_width,
-                y: tilesheet.tile_height,
-            };
-            let grid_size = tile_size.into();
-            let map_type = TilemapType::default();
-
-            commands.entity(tilemap_entity).insert(TilemapBundle {
-                grid_size,
-                map_type,
-                size: map_size,
-                storage: tile_storage,
-                texture: TilemapTexture::Single(texture_handle),
-                tile_size,
-                transform: get_tilemap_center_transform(&map_size, &grid_size, &map_type, 0.0),
-                ..Default::default()
-            });
-        }
+    if let Some(stage) = get_stage_by_name(String::from("Hell"), &stage_collections) {
+        stage.spawn(commands, asset_server, tilesheet_collections);
     }
 
-    next_app_state.set(AppState::InGame);
+    next_app_state.set(AppState::OnStage);
 }
