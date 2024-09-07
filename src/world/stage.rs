@@ -1,4 +1,4 @@
-use crate::*;
+use super::*;
 
 const BATTLEFIELD_WIDTH: u32 = 16;
 const BATTLEFIELD_HEIGHT: u32 = 8;
@@ -50,7 +50,9 @@ pub fn spawn_stage(
                     if (x < margin_width || x >= map_size.x - margin_width)
                         || (y < margin_height || y >= map_size.y - margin_height)
                     {
-                        commands.entity(tile_entity).insert(TileTextureIndex(tilesheet.position_to_index(14, 1)));
+                        commands
+                            .entity(tile_entity)
+                            .insert(TileTextureIndex(tilesheet.position_to_index(14, 1)));
                     } else {
                         // Spawn center battlefield
                         let cell_x = x - margin_width;

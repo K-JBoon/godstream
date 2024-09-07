@@ -1,7 +1,0 @@
-(
-	name: "Demeter",
-	pantheon: Greek,
-	domains: [Fertility],
-	description: "The nurturing goddess of agriculture, Demeter can bless her allies with growth and prosperity.",
-	model: "voxels/ally_units/greek_demeter.vox",
-)

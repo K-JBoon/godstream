@@ -1,7 +1,0 @@
-(
-	name: "Ares",
-	pantheon: Greek,
-	domains: [War, Fire],
-	description: "The god of brutal war and combat, Ares thrives in chaos and can drive his allies into a berserker rage.",
-	model: "voxels/ally_units/greek_ares.vox",
-)

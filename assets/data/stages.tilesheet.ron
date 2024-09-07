@@ -1,0 +1,10 @@
+[
+	(
+		name: "Hell",
+		asset_path: "spritesheets/maps/hell.png",
+		tile_width: 48.0,
+		tile_height: 48.0,
+		columns: 16,
+		rows: 16,
+	)
+]

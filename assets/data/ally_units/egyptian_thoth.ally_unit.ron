@@ -1,7 +1,0 @@
-(
-	name: "Thoth",
-	pantheon: Egyptian,
-	domains: [Wisdom, Magic],
-	description: "The ibis-headed god of knowledge and writing, Thoth can outwit his enemies and cast powerful spells to control the battlefield.",
-	model: "voxels/ally_units/egyptian_thoth.vox",
-)

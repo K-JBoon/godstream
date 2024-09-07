@@ -1,7 +1,0 @@
-(
-	name: "Skadi",
-	pantheon: Norse,
-	domains: [Hunting],
-	description: "The goddess of winter and the hunt, Skadi can freeze her enemies and strike them from a distance with her bow.",
-	model: "voxels/ally_units/norse_skadi.vox",
-)

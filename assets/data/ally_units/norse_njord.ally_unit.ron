@@ -1,7 +1,0 @@
-(
-	name: "Njord",
-	pantheon: Norse,
-	domains: [Water, Wealth],
-	description: "God of the sea and prosperity, Njord commands the ocean's power and can bring fortune to his allies.",
-	model: "voxels/ally_units/norse_njord.vox",
-)

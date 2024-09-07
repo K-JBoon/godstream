@@ -1,11 +1,9 @@
+use rand::seq::SliceRandom;
+use std::collections::HashMap;
+use std::fmt;
+
 // Core Bevy imports
 pub(crate) use bevy::{input::common_conditions::*, prelude::*, window::WindowMode};
-
-// Audio
-use bevy_kira_audio::prelude::*;
-
-// Tilesheet support
-use bevy_ecs_tilemap::prelude::*;
 
 // Input
 use bevy_ineffable::prelude::*;
@@ -19,6 +17,8 @@ use bevy_common_assets::ron::RonAssetPlugin;
 // Game Modules
 mod common;
 use common::*;
+mod ui;
+use ui::*;
 mod audio;
 use audio::*;
 mod states;
@@ -43,7 +43,6 @@ fn main() {
             })
             .set(ImagePlugin::default_nearest()),
         IneffablePlugin,
-        TilemapPlugin,
     ))
     .add_systems(Startup, setup);
 
@@ -51,7 +50,13 @@ fn main() {
     app.add_plugins(WorldInspectorPlugin::new());
 
     // Game Plugins
-    app.add_plugins((common_plugin, audio_plugin, unit_plugin, stage_plugin));
+    app.add_plugins((
+        common_plugin,
+        ui_plugin,
+        audio_plugin,
+        unit_plugin,
+        stage_plugin,
+    ));
 
     // Game State
     app.init_state::<AppState>();

@@ -1,7 +1,0 @@
-(
-	name: "Osiris",
-	pantheon: Egyptian,
-	domains: [Death],
-	description: "The god of resurrection, Osiris can bring fallen allies back to life or curse enemies with the inevitability of death.",
-	model: "voxels/ally_units/egyptian_osiris.vox",
-)

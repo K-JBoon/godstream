@@ -1,7 +1,0 @@
-(
-	name: "Odin",
-	pantheon: Norse,
-	domains: [Wisdom, War],
-	description: "The all-father, known for his wisdom and strategic prowess. He can outthink and outmaneuver opponents on the battlefield.",
-	model: "voxels/ally_units/norse_odin.vox",
-)

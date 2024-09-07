@@ -2,21 +2,19 @@ use crate::*;
 
 pub mod markers;
 pub use markers::*;
-pub mod resources;
-pub use resources::*;
 pub mod pantheon;
 pub use pantheon::*;
 pub mod domain;
 pub use domain::*;
-pub mod ally_unit;
-pub use ally_unit::*;
+pub mod unit;
+pub use unit::*;
 
 pub fn unit_plugin(app: &mut App) {
-    app.register_type::<AllyUnit>()
-        .add_plugins(RonAssetPlugin::<AllyUnit>::new(&["ally_unit.ron"]))
-        .add_systems(Startup, load_ally_units)
+    app.register_type::<Unit>()
+        .add_plugins(RonAssetPlugin::<UnitCollection>::new(&["units.ron"]))
+        .add_systems(Startup, load_units)
         .add_systems(
             Update,
-            (spawn_ally_unit.run_if(input_just_pressed(KeyCode::KeyQ)),),
+            (spawn_unit.run_if(input_just_pressed(KeyCode::KeyQ)),),
         );
 }

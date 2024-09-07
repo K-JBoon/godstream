@@ -1,5 +1,5 @@
 [package]
-name = "pantheon-roguelite"
+name = "godstream"
 version = "0.1.0"
 edition = "2021"
 
@@ -40,6 +40,7 @@ bevy_kira_audio = { version = "0.20.0", default-features = false, features = ["m
 log = { version = "*", features = ["max_level_debug", "release_max_level_warn"] }
 rand = "0.8.5"
 serde = "1.0.209"
+sickle_ui = { git = "https://github.com/UmbraLuminosa/sickle_ui", branch = "main" }
 
 # Enable a small amount of optimization in the dev profile.
 [profile.dev]

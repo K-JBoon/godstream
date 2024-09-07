@@ -1,7 +1,0 @@
-(
-	name: "Hel",
-	pantheon: Norse,
-	domains: [Death],
-	description: "The ruler of the underworld, Hel commands legions of the dead and can spread decay among enemies.",
-	model: "voxels/ally_units/norse_hel.vox",
-)

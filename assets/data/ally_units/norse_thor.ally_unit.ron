@@ -1,7 +1,0 @@
-(
-	name: "Thor",
-	pantheon: Norse,
-	domains: [Thunder, Strength],
-	description: "The god of thunder and storms, Thor wields Mjolnir to crush his foes with raw power and devastating lightning.",
-	model: "voxels/ally_units/norse_thor.vox",
-)

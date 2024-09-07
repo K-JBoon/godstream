@@ -1,0 +1,193 @@
+UnitCollection(
+{
+		"Anubis": Unit(
+			name: "Anubis",
+			pantheon: Egyptian,
+			domains: [Death, Justice],
+			description: "The god of mummification and the afterlife, Anubis can weigh the souls of his enemies, weakening or banishing them.",
+			spritesheet: "MISSING",
+		),
+		"Bases": Unit(
+			name: "Bastet",
+			pantheon: Egyptian,
+			domains: [Protection, Fertility],
+			description: "The cat goddess of home and fertility, Bastet protects her allies with fierce devotion and ensures the growth of her followers.",
+			spritesheet: "MISSING",
+		),
+		"Horus": Unit(
+			name: "Horus",
+			pantheon: Egyptian,
+			domains: [War, Protection],
+			description: "The falcon-headed god of kingship and war, Horus is a defender and a fierce warrior, shielding his allies and striking down foes.",
+			spritesheet: "MISSING",
+		),
+		"Isis": Unit(
+			name: "Isis",
+			pantheon: Egyptian,
+			domains: [Magic, Healing],
+			description: "The powerful sorceress and healer, Isis uses her magic to protect and restore her allies, turning the tide of battle.",
+			spritesheet: "MISSING",
+		),
+		"Osiris": Unit(
+			name: "Osiris",
+			pantheon: Egyptian,
+			domains: [Death],
+			description: "The god of resurrection, Osiris can bring fallen allies back to life or curse enemies with the inevitability of death.",
+			spritesheet: "MISSING"
+		),
+		"Ra": Unit(
+			name: "Ra",
+			pantheon: Egyptian,
+			domains: [Light],
+			description: "The sun god, Ra illuminates the battlefield, burning enemies and rejuvenating allies with his divine light.",
+			spritesheet: "MISSING"
+		),
+		"Sekhmet": Unit(
+			name: "Sekhmet",
+			pantheon: Egyptian,
+			domains: [War, Fire],
+			description: "The lioness goddess of war, Sekhmet can unleash fiery destruction upon her enemies, leaving nothing but ashes in her wake.",
+			spritesheet: "MISSING"
+		),
+		"Sobek": Unit(
+			name: "Sobek",
+			pantheon: Egyptian,
+			domains: [Water, Strength],
+			description: "The crocodile god of the Nile, Sobek uses his immense physical power and command over water to dominate his enemies.",
+			spritesheet: "MISSING"
+		),
+		"Thoth": Unit(
+			name: "Thoth",
+			pantheon: Egyptian,
+			domains: [Wisdom, Magic],
+			description: "The ibis-headed god of knowledge and writing, Thoth can outwit his enemies and cast powerful spells to control the battlefield.",
+			spritesheet: "MISSING"
+		),
+		"Apollo": Unit(
+			name: "Apollo",
+			pantheon: Greek,
+			domains: [Light, Healing],
+			description: "The god of light and medicine, Apollo can heal his allies and strike down enemies with arrows of pure sunlight.",
+			spritesheet: "MISSING"
+		),
+		"Ares": Unit(
+			name: "Ares",
+			pantheon: Greek,
+			domains: [War, Fire],
+			description: "The god of brutal war and combat, Ares thrives in chaos and can drive his allies into a berserker rage.",
+			spritesheet: "MISSING"
+		),
+		"Artemis": Unit(
+			name: "Artemis",
+			pantheon: Greek,
+			domains: [Hunting],
+			description: "Goddess of the hunt and the moon, Artemis can strike with precision from afar and cloak herself in shadows.",
+			spritesheet: "MISSING"
+		),
+		"Athena": Unit(
+			name: "Athena",
+			pantheon: Greek,
+			domains: [Wisdom, War],
+			description: "Goddess of wisdom and strategy, Athena is a master tactician who excels in both planning and combat.",
+			spritesheet: "MISSING"
+		),
+		"Demeter": Unit(
+			name: "Demeter",
+			pantheon: Greek,
+			domains: [Fertility],
+			description: "The nurturing goddess of agriculture, Demeter can bless her allies with growth and prosperity.",
+			spritesheet: "MISSING"
+		),
+		"Hades": Unit(
+			name: "Hades",
+			pantheon: Greek,
+			domains: [Death, Wealth],
+			description: "The ruler of the underworld, Hades governs the dead and hoards vast riches, using them to empower himself.",
+			spritesheet: "MISSING"
+		),
+		"Hecate": Unit(
+			name: "Hecate",
+			pantheon: Greek,
+			domains: [Magic],
+			description: "The goddess of witchcraft and the night, Hecate can cast powerful curses and manipulate the battlefield with dark magic.",
+			spritesheet: "MISSING"
+		),
+		"Poseidon": Unit(
+			name: "Poseidon",
+			pantheon: Greek,
+			domains: [Water],
+			description: "The god of the sea and earthquakes, Poseidon can control water and shake the ground to disorient enemies.",
+			spritesheet: "MISSING"
+		),
+		"Zeus": Unit(
+			name: "Zeus",
+			pantheon: Greek,
+			domains: [Thunder],
+			description: "The king of the gods, Zeus controls the weather and strikes down enemies with powerful lightning.",
+			spritesheet: "MISSING"
+		),
+		"Freyja": Unit(
+			name: "Freyja",
+			pantheon: Norse,
+			domains: [Love, Fertility],
+			description: "Goddess of love and fertility, Freyja is also a fierce warrior who can inspire allies or devastate enemies.",
+			spritesheet: "MISSING"
+		),
+		"Heimdall": Unit(
+			name: "Heimdall",
+			pantheon: Norse,
+			domains: [Light, Protection],
+			description: "The ever-vigilant guardian, Heimdall can foresee enemy actions and protect allies with radiant light.",
+			spritesheet: "MISSING"
+		),
+		"Hel": Unit(
+			name: "Hel",
+			pantheon: Norse,
+			domains: [Death],
+			description: "The ruler of the underworld, Hel commands legions of the dead and can spread decay among enemies.",
+			spritesheet: "MISSING"
+		),
+		"Loki": Unit(
+			name: "Loki",
+			pantheon: Norse,
+			domains: [Trickery, Fire],
+			description: "The master of mischief and chaos, Loki uses his cunning and illusions to deceive and disrupt opponents.",
+			spritesheet: "MISSING"
+		),
+		"Njord": Unit(
+			name: "Njord",
+			pantheon: Norse,
+			domains: [Water, Wealth],
+			description: "God of the sea and prosperity, Njord commands the ocean's power and can bring fortune to his allies.",
+			spritesheet: "MISSING"
+		),
+		"Odin": Unit(
+			name: "Odin",
+			pantheon: Norse,
+			domains: [Wisdom, War],
+			description: "The all-father, known for his wisdom and strategic prowess. He can outthink and outmaneuver opponents on the battlefield.",
+			spritesheet: "MISSING"
+		),
+		"Skada": Unit(
+			name: "Skadi",
+			pantheon: Norse,
+			domains: [Hunting],
+			description: "The goddess of winter and the hunt, Skadi can freeze her enemies and strike them from a distance with her bow.",
+			spritesheet: "MISSING"
+		),
+		"Thor": Unit(
+			name: "Thor",
+			pantheon: Norse,
+			domains: [Thunder, Strength],
+			description: "The god of thunder and storms, Thor wields Mjolnir to crush his foes with raw power and devastating lightning.",
+			spritesheet: "MISSING"
+		),
+		"Tyr": Unit(
+			name: "Tyr",
+			pantheon: Norse,
+			domains: [War, Justice],
+			description: "The one-handed god of war and justice, Tyr is a symbol of bravery and fairness, striking down enemies with righteous fury.",
+			spritesheet: "MISSING"
+		),
+	}
+),

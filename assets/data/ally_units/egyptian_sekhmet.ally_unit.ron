@@ -1,7 +1,0 @@
-(
-	name: "Sekhmet",
-	pantheon: Egyptian,
-	domains: [War, Fire],
-	description: "The lioness goddess of war, Sekhmet can unleash fiery destruction upon her enemies, leaving nothing but ashes in her wake.",
-	model: "voxels/ally_units/egyptian_sekhmet.vox",
-)

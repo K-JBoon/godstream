@@ -1,7 +1,0 @@
-(
-	name: "Zeus",
-	pantheon: Greek,
-	domains: [Thunder],
-	description: "The king of the gods, Zeus controls the weather and strikes down enemies with powerful lightning.",
-	model: "voxels/ally_units/greek_zeus.vox",
-)
