@@ -1,5 +1,7 @@
 use super::*;
 
+static TILE_ANIMATION_FRAME_DURATION: u64 = 250;
+
 #[derive(Component, Debug, Clone, Reflect, serde::Deserialize)]
 pub enum LayerType {
     Background,
@@ -18,7 +20,7 @@ pub struct StageLayer {
     pub height: u32,
     pub x_offset: f32,
     pub y_offset: f32,
-    pub cells: Vec<Vec<SpritesheetCell>>,
+    pub cells: Vec<Vec<SpritesheetCellIdentifier>>,
 }
 
 // Structure for the entire stage
@@ -35,6 +37,18 @@ pub struct StageCollection(HashMap<String, Stage>);
 pub struct StageAssets {
     #[asset(path = "data/stages/", collection)]
     _folder: Vec<UntypedHandle>,
+}
+
+#[derive(Component)]
+pub struct AnimatedTile {
+    pub tilesheet: Tilesheet, // TODO: we shouldn't have to copy this for every tile
+    pub cell_identifiers: Vec<SpritesheetCellIdentifier>,
+    pub index: usize,
+}
+
+#[derive(Resource)]
+pub struct TileAnimationConfig {
+    timer: Timer,
 }
 
 // Implementation for Stage
@@ -63,38 +77,44 @@ impl Stage {
                     let mut tile_storage = TileStorage::empty(map_size);
 
                     layer.cells.iter().enumerate().for_each(|(y, row)| {
-                        row.iter().enumerate().for_each(|(x, cell)| {
+                        row.iter().enumerate().for_each(|(x, cell_identifier)| {
                             // Make sure we don't go out of bounds if the data has been
                             // poorly defined
                             if (x as u32) < layer.width && (y as u32) < layer.height {
-                                let tile_pos = TilePos {
-                                    x: x as u32,
-                                    y: y as u32,
-                                };
-                                let tile_entity = commands
-                                    .spawn(TileBundle {
-                                        position: tile_pos,
-                                        tilemap_id: TilemapId(tilemap_entity),
-                                        ..Default::default()
-                                    })
-                                    .id();
-                                tile_storage.set(&tile_pos, tile_entity);
+                                // Cell may be identified as None, or the index may be invalid,
+                                // in which case we skip making an entity
+                                if let Some(texture_index) =
+                                    tilesheet.identifier_to_index(cell_identifier)
+                                {
+                                    let tile_pos = TilePos {
+                                        x: x as u32,
+                                        y: y as u32,
+                                    };
+                                    let tile_entity = commands
+                                        .spawn(TileBundle {
+                                            position: tile_pos,
+                                            tilemap_id: TilemapId(tilemap_entity),
+                                            ..Default::default()
+                                        })
+                                        .id();
+                                    tile_storage.set(&tile_pos, tile_entity);
 
-                                match cell {
-                                    SpritesheetCell::Static(identifier) => match identifier {
-                                        SpritesheetCellIdentifier::Name(cell_name) => {
-                                            commands.entity(tile_entity).insert(TileTextureIndex(
-                                                tilesheet.name_to_index(cell_name),
-                                            ));
+                                    commands
+                                        .entity(tile_entity)
+                                        .insert(TileTextureIndex(texture_index));
+
+                                    if let SpritesheetCellIdentifier::Name(cell_name) =
+                                        cell_identifier
+                                    {
+                                        if let Some(SpritesheetCell::Animated(cell_identifiers)) =
+                                            tilesheet.spritesheet.cell_names.get(cell_name)
+                                        {
+                                            commands.entity(tile_entity).insert(AnimatedTile {
+                                                tilesheet: tilesheet.clone(),
+                                                cell_identifiers: cell_identifiers.clone(),
+                                                index: 0,
+                                            });
                                         }
-                                        SpritesheetCellIdentifier::Position(position) => {
-                                            commands.entity(tile_entity).insert(TileTextureIndex(
-                                                tilesheet.position_to_index(position.0, position.1),
-                                            ));
-                                        }
-                                    },
-                                    SpritesheetCell::Animated(_) => {
-                                        warn!("NOT IMPLEMENTED");
                                     }
                                 }
                             }
@@ -172,4 +192,41 @@ pub fn spawn_stage(
     }
 
     next_app_state.set(AppState::OnStage);
+}
+
+pub fn setup_tile_animation(mut commands: Commands) {
+    commands.insert_resource(TileAnimationConfig {
+        // create the repeating timer
+        timer: Timer::new(
+            std::time::Duration::from_millis(TILE_ANIMATION_FRAME_DURATION),
+            TimerMode::Repeating,
+        ),
+    });
+}
+
+pub fn animate_tiles(
+    time: Res<Time>,
+    mut config: ResMut<TileAnimationConfig>,
+    mut tile_query: Query<(&mut TileTextureIndex, &mut AnimatedTile)>,
+) {
+    config.timer.tick(time.delta());
+
+    if config.timer.finished() {
+        for (mut texture_index, mut animated_tile) in tile_query.iter_mut() {
+            if animated_tile.index == animated_tile.cell_identifiers.len() - 1 {
+                animated_tile.index = 0;
+            }
+
+            animated_tile.index += 1;
+
+            if let Some(next_texture_index) = animated_tile.tilesheet.identifier_to_index(
+                animated_tile
+                    .cell_identifiers
+                    .get(animated_tile.index)
+                    .unwrap(),
+            ) {
+                texture_index.0 = next_texture_index;
+            }
+        }
+    }
 }

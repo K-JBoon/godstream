@@ -7,13 +7,14 @@ type SpritesheetCellLocation = (u32, u32);
 pub enum SpritesheetCellIdentifier {
     Position(SpritesheetCellLocation),
     Name(String),
+    None,
 }
 
 #[derive(Debug, Clone, Reflect, serde::Deserialize)]
 #[serde(untagged)]
 pub enum SpritesheetCell {
-    Static(SpritesheetCellIdentifier),
     Animated(Vec<SpritesheetCellIdentifier>),
+    Static(SpritesheetCellIdentifier),
 }
 
 #[derive(Component, Debug, Clone, Reflect, serde::Deserialize)]
