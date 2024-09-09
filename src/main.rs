@@ -68,5 +68,13 @@ fn main() {
 }
 
 fn setup(mut commands: Commands) {
-    commands.spawn(Camera2dBundle::default());
+    commands.spawn(Camera2dBundle {
+        projection: OrthographicProjection {
+            scale: 1.2,
+            near: -1000.0,
+            far: 1000.0,
+            ..default()
+        },
+        ..default()
+    });
 }

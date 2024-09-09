@@ -16,8 +16,28 @@ pub struct TilesheetAssets {
 
 impl Tilesheet {
     pub fn name_to_index(&self, name: &String) -> u32 {
-        if let Some(cell) = self.spritesheet.named_cells.get(name) {
-            self.position_to_index(cell.0, cell.1)
+        if let Some(cell) = self.spritesheet.cell_names.get(name) {
+            match cell {
+                SpritesheetCell::Static(identifier) => match identifier {
+                    SpritesheetCellIdentifier::Name(name) => self.name_to_index(name),
+                    SpritesheetCellIdentifier::Position(position) => {
+                        self.position_to_index(position.0, position.1)
+                    }
+                },
+                SpritesheetCell::Animated(identifiers) => {
+                    warn!("Nesting animated cells is not supported! Only the first frame will be returned!");
+                    if !identifiers.is_empty() {
+                        match identifiers.first().unwrap() {
+                            SpritesheetCellIdentifier::Name(name) => self.name_to_index(name),
+                            SpritesheetCellIdentifier::Position(position) => {
+                                self.position_to_index(position.0, position.1)
+                            }
+                        }
+                    } else {
+                        0
+                    }
+                },
+            }
         } else {
             warn!(
                 "Tried to access named cell '{}' which is not defined for Spritesheet '{}'",
@@ -26,6 +46,7 @@ impl Tilesheet {
             0
         }
     }
+
     pub fn position_to_index(&self, row: u32, column: u32) -> u32 {
         if row > self.spritesheet.rows - 1 || column > self.spritesheet.columns - 1 {
             warn!(

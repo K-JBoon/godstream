@@ -1,17 +1,11 @@
 use super::*;
 
 #[derive(Component, Debug, Clone, Reflect, serde::Deserialize)]
-#[serde(untagged)]
-pub enum StageCell {
-    Position(SpritesheetCellPosition),
-    Name(String),
-}
-
-#[derive(Component, Debug, Clone, Reflect, serde::Deserialize)]
 pub enum LayerType {
     Background,
     AllyStage,
     EnemyStage,
+    Object, // Things that collide, units, terrain, etc.
     Foreground,
 }
 
@@ -24,7 +18,7 @@ pub struct StageLayer {
     pub height: u32,
     pub x_offset: f32,
     pub y_offset: f32,
-    pub cells: Vec<Vec<StageCell>>,
+    pub cells: Vec<Vec<SpritesheetCell>>,
 }
 
 // Structure for the entire stage
@@ -87,17 +81,22 @@ impl Stage {
                                 tile_storage.set(&tile_pos, tile_entity);
 
                                 match cell {
-                                    StageCell::Name(cell_name) => {
-                                        commands.entity(tile_entity).insert(TileTextureIndex(
-                                            tilesheet.name_to_index(cell_name),
-                                        ));
+                                    SpritesheetCell::Static(identifier) => match identifier {
+                                        SpritesheetCellIdentifier::Name(cell_name) => {
+                                            commands.entity(tile_entity).insert(TileTextureIndex(
+                                                tilesheet.name_to_index(cell_name),
+                                            ));
+                                        }
+                                        SpritesheetCellIdentifier::Position(position) => {
+                                            commands.entity(tile_entity).insert(TileTextureIndex(
+                                                tilesheet.position_to_index(position.0, position.1),
+                                            ));
+                                        }
+                                    },
+                                    SpritesheetCell::Animated(_) => {
+                                        warn!("NOT IMPLEMENTED");
                                     }
-                                    StageCell::Position(position) => {
-                                        commands.entity(tile_entity).insert(TileTextureIndex(
-                                            tilesheet.position_to_index(position.0, position.1),
-                                        ));
-                                    }
-                                };
+                                }
                             }
                         });
                     });

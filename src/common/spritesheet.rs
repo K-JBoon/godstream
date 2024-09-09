@@ -1,7 +1,20 @@
 use super::*;
 
+type SpritesheetCellLocation = (u32, u32);
+
 #[derive(Debug, Clone, Reflect, serde::Deserialize)]
-pub struct SpritesheetCellPosition(pub u32, pub u32);
+#[serde(untagged)]
+pub enum SpritesheetCellIdentifier {
+    Position(SpritesheetCellLocation),
+    Name(String),
+}
+
+#[derive(Debug, Clone, Reflect, serde::Deserialize)]
+#[serde(untagged)]
+pub enum SpritesheetCell {
+    Static(SpritesheetCellIdentifier),
+    Animated(Vec<SpritesheetCellIdentifier>),
+}
 
 #[derive(Component, Debug, Clone, Reflect, serde::Deserialize)]
 pub struct Spritesheet {
@@ -10,5 +23,5 @@ pub struct Spritesheet {
     pub tile_height: f32,
     pub rows: u32,
     pub columns: u32,
-    pub named_cells: HashMap<String, SpritesheetCellPosition>,
+    pub cell_names: HashMap<String, SpritesheetCell>,
 }

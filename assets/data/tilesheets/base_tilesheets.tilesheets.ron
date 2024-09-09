@@ -8,7 +8,7 @@ TilesheetCollection(
 				tile_height: 48.0,
 				columns: 16,
 				rows: 16,
-				named_cells: {
+				cell_names: {
 					"bg1": (8, 1),
 					"bg2": (8, 2),
 					"bg3": (8, 3),
