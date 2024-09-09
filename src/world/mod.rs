@@ -19,6 +19,8 @@ pub fn stage_plugin(app: &mut App) {
                 .load_collection::<TilesheetAssets>()
                 .load_collection::<StageAssets>(),
         )
+        .add_systems(Startup, setup_tile_animation)
+        .add_systems(Update, animate_tiles)
         .add_systems(
             OnEnter(AppState::PrepareStage),
             (despawn::<StageMarker>, spawn_stage),

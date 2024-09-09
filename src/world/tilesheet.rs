@@ -15,18 +15,42 @@ pub struct TilesheetAssets {
 }
 
 impl Tilesheet {
-    pub fn name_to_index(&self, name: &String) -> u32 {
-        if let Some(cell) = self.spritesheet.named_cells.get(name) {
-            self.position_to_index(cell.0, cell.1)
+    pub fn cell_to_index(&self, cell: &SpritesheetCell) -> Option<u32> {
+        match cell {
+            SpritesheetCell::Static(identifier) => self.identifier_to_index(identifier),
+            SpritesheetCell::Animated(identifiers) => {
+                if !identifiers.is_empty() {
+                    self.identifier_to_index(identifiers.first().unwrap())
+                } else {
+                    None
+                }
+            }
+        }
+    }
+
+    pub fn identifier_to_index(&self, identifier: &SpritesheetCellIdentifier) -> Option<u32> {
+        match identifier {
+            SpritesheetCellIdentifier::Name(name) => self.name_to_index(name),
+            SpritesheetCellIdentifier::Position(position) => {
+                self.position_to_index(position.0, position.1)
+            }
+            SpritesheetCellIdentifier::None => None,
+        }
+    }
+
+    pub fn name_to_index(&self, name: &String) -> Option<u32> {
+        if let Some(cell) = self.spritesheet.cell_names.get(name) {
+            self.cell_to_index(cell)
         } else {
             warn!(
                 "Tried to access named cell '{}' which is not defined for Spritesheet '{}'",
                 name, self.spritesheet.asset_path
             );
-            0
+            None
         }
     }
-    pub fn position_to_index(&self, row: u32, column: u32) -> u32 {
+
+    pub fn position_to_index(&self, row: u32, column: u32) -> Option<u32> {
         if row > self.spritesheet.rows - 1 || column > self.spritesheet.columns - 1 {
             warn!(
                 "Incorrect position request ({}, {}) for ({}, {}, {})",
@@ -36,9 +60,9 @@ impl Tilesheet {
                 self.spritesheet.rows,
                 self.spritesheet.columns
             );
-            0
+            None
         } else {
-            row * self.spritesheet.columns + column
+            Some(row * self.spritesheet.columns + column)
         }
     }
 }

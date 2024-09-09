@@ -12,6 +12,7 @@ use bevy_ineffable::prelude::*;
 
 // Debugging
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
+use iyes_perf_ui::prelude::*;
 
 // Data
 use bevy_common_assets::ron::RonAssetPlugin;
@@ -54,6 +55,10 @@ fn main() {
 
     // DEBUG UI
     app.add_plugins(WorldInspectorPlugin::new());
+    app.add_plugins(bevy::diagnostic::FrameTimeDiagnosticsPlugin)
+        .add_plugins(bevy::diagnostic::EntityCountDiagnosticsPlugin)
+        .add_plugins(bevy::diagnostic::SystemInformationDiagnosticsPlugin)
+        .add_plugins(PerfUiPlugin);
 
     // Game Plugins
     app.add_plugins((
@@ -68,5 +73,17 @@ fn main() {
 }
 
 fn setup(mut commands: Commands) {
-    commands.spawn(Camera2dBundle::default());
+    commands.spawn(Camera2dBundle {
+        projection: OrthographicProjection {
+            scale: 1.2,
+            near: -1000.0,
+            far: 1000.0,
+            ..default()
+        },
+        ..default()
+    });
+
+    // create a simple Perf UI with default settings
+    // and all entries provided by the crate:
+    commands.spawn(PerfUiCompleteBundle::default());
 }
