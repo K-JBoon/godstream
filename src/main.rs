@@ -7,15 +7,15 @@ pub(crate) use bevy::{input::common_conditions::*, prelude::*, window::WindowMod
 // Loading state
 use bevy_asset_loader::prelude::*;
 
-// Input
-use bevy_ineffable::prelude::*;
-
 // Debugging
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
 use iyes_perf_ui::prelude::*;
 
 // Data
 use bevy_common_assets::ron::RonAssetPlugin;
+
+// Lighting
+use bevy_light_2d::prelude::*;
 
 // Game Modules
 mod common;
@@ -45,7 +45,7 @@ fn main() {
                 ..default()
             })
             .set(ImagePlugin::default_nearest()),
-        IneffablePlugin,
+        Light2dPlugin,
     ))
     .init_state::<AppState>()
     .add_loading_state(
@@ -73,15 +73,21 @@ fn main() {
 }
 
 fn setup(mut commands: Commands) {
-    commands.spawn(Camera2dBundle {
-        projection: OrthographicProjection {
-            scale: 1.2,
-            near: -1000.0,
-            far: 1000.0,
+    commands.spawn((
+        Camera2dBundle {
+            projection: OrthographicProjection {
+                scale: 1.2,
+                near: -1000.0,
+                far: 1000.0,
+                ..default()
+            },
             ..default()
         },
-        ..default()
-    });
+        AmbientLight2d {
+            brightness: 0.05,
+            ..default()
+        },
+    ));
 
     // create a simple Perf UI with default settings
     // and all entries provided by the crate:

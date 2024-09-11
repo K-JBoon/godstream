@@ -1,4 +1,5 @@
 use super::*;
+use bevy::color::palettes::css::YELLOW;
 
 static TILE_ANIMATION_FRAME_DURATION: u64 = 250;
 
@@ -76,6 +77,13 @@ impl Stage {
                     let tilemap_entity = commands.spawn_empty().id();
                     let mut tile_storage = TileStorage::empty(map_size);
 
+                    let tile_size = TilemapTileSize {
+                        x: tilesheet.spritesheet.tile_width,
+                        y: tilesheet.spritesheet.tile_height,
+                    };
+                    let grid_size = tile_size.into();
+                    let map_type = TilemapType::default();
+
                     layer.cells.iter().enumerate().for_each(|(y, row)| {
                         row.iter().enumerate().for_each(|(x, cell_identifier)| {
                             // Make sure we don't go out of bounds if the data has been
@@ -114,6 +122,40 @@ impl Stage {
                                                 cell_identifiers: cell_identifiers.clone(),
                                                 index: 0,
                                             });
+                                            let tile_position_world_space =
+                                                tile_pos.center_in_world(&grid_size, &map_type);
+
+                                            commands.spawn((PointLight2dBundle {
+                                                point_light: PointLight2d {
+                                                    radius: 48.0,
+                                                    color: Color::Srgba(YELLOW),
+                                                    intensity: 9.0,
+                                                    falloff: 4.0,
+                                                    ..default()
+                                                },
+                                                transform: Transform::from_xyz(
+                                                    tile_position_world_space.x,
+                                                    tile_position_world_space.y,
+                                                    layer_index as f32,
+                                                ) * Transform::from_xyz(
+                                                    layer.x_offset
+                                                        * tilesheet.spritesheet.tile_width,
+                                                    layer.y_offset
+                                                        * tilesheet.spritesheet.tile_height,
+                                                    1.0,
+                                                ) * Transform::from_xyz(
+                                                    -0.5 * map_size.x as f32
+                                                        * tilesheet.spritesheet.tile_width,
+                                                    -0.5 * map_size.y as f32
+                                                        * tilesheet.spritesheet.tile_height,
+                                                    1.0,
+                                                ) * Transform::from_xyz(
+                                                    0.5 * tilesheet.spritesheet.tile_width,
+                                                    0.5 * tilesheet.spritesheet.tile_height,
+                                                    1.0,
+                                                ),
+                                                ..default()
+                                            },));
                                         }
                                     }
                                 }
@@ -130,13 +172,6 @@ impl Stage {
                         }
                         _ => (),
                     };
-
-                    let tile_size = TilemapTileSize {
-                        x: tilesheet.spritesheet.tile_width,
-                        y: tilesheet.spritesheet.tile_height,
-                    };
-                    let grid_size = tile_size.into();
-                    let map_type = TilemapType::default();
 
                     commands.entity(tilemap_entity).insert((
                         Name::new("TileBundle"),
@@ -196,7 +231,6 @@ pub fn spawn_stage(
 
 pub fn setup_tile_animation(mut commands: Commands) {
     commands.insert_resource(TileAnimationConfig {
-        // create the repeating timer
         timer: Timer::new(
             std::time::Duration::from_millis(TILE_ANIMATION_FRAME_DURATION),
             TimerMode::Repeating,
