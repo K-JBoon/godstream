@@ -76,6 +76,20 @@ impl Stage {
                     let tilemap_entity = commands.spawn_empty().id();
                     let mut tile_storage = TileStorage::empty(map_size);
 
+                    let tile_size = TilemapTileSize {
+                        x: tilesheet.spritesheet.tile_width,
+                        y: tilesheet.spritesheet.tile_height,
+                    };
+                    let grid_size = tile_size.into();
+                    let map_type = TilemapType::default();
+
+                    let layer_offset = Transform::from_xyz(
+                        layer.x_offset
+                        * tilesheet.spritesheet.tile_width,
+                        layer.y_offset
+                        * tilesheet.spritesheet.tile_height,
+                        1.0);
+
                     layer.cells.iter().enumerate().for_each(|(y, row)| {
                         row.iter().enumerate().for_each(|(x, cell_identifier)| {
                             // Make sure we don't go out of bounds if the data has been
@@ -116,6 +130,55 @@ impl Stage {
                                             });
                                         }
                                     }
+
+                                    let tile_position_world_space =
+                                        tile_pos.center_in_world(&grid_size, &map_type);
+                                    let tile_transform = 
+                                            Transform::from_xyz(
+                                                tile_position_world_space.x,
+                                                tile_position_world_space.y,
+                                                layer_index as f32,
+                                            ) * layer_offset
+                                            * Transform::from_xyz(
+                                                -0.5 * map_size.x as f32
+                                                * tilesheet.spritesheet.tile_width,
+                                                -0.5 * map_size.y as f32
+                                                * tilesheet.spritesheet.tile_height,
+                                                1.0,
+                                            ) * Transform::from_xyz(
+                                                0.5 * tilesheet.spritesheet.tile_width,
+                                                0.5 * tilesheet.spritesheet.tile_height,
+                                                1.0,
+                                            );
+
+                                    if let Some(light_settings) = tilesheet.lights.get(cell_identifier) {
+                                        // TODO: this math can probably be simplified,
+                                        // need to study the bevy_ecs_tilemap API better
+
+                                        commands.spawn((PointLight2dBundle {
+                                            point_light: PointLight2d {
+                                                radius: light_settings.radius,
+                                                color: light_settings.color,
+                                                intensity: light_settings.intensity,
+                                                falloff: light_settings.falloff,
+                                                ..default()
+                                            },
+                                            transform: tile_transform,
+                                            ..default()
+                                        },));
+                                    }
+
+                                    if tilesheet.occluders.contains(cell_identifier) {
+                                        commands.spawn(LightOccluder2dBundle {
+                                            light_occluder: LightOccluder2d {
+                                                shape: LightOccluder2dShape::Rectangle {
+                                                    half_size: Vec2::new(tilesheet.spritesheet.tile_width / 2.0, tilesheet.spritesheet.tile_height / 2.0),
+                                                },
+                                            },
+                                            transform: tile_transform,
+                                            ..default()
+                                        });
+                                    }
                                 }
                             }
                         });
@@ -130,13 +193,6 @@ impl Stage {
                         }
                         _ => (),
                     };
-
-                    let tile_size = TilemapTileSize {
-                        x: tilesheet.spritesheet.tile_width,
-                        y: tilesheet.spritesheet.tile_height,
-                    };
-                    let grid_size = tile_size.into();
-                    let map_type = TilemapType::default();
 
                     commands.entity(tilemap_entity).insert((
                         Name::new("TileBundle"),
@@ -196,7 +252,6 @@ pub fn spawn_stage(
 
 pub fn setup_tile_animation(mut commands: Commands) {
     commands.insert_resource(TileAnimationConfig {
-        // create the repeating timer
         timer: Timer::new(
             std::time::Duration::from_millis(TILE_ANIMATION_FRAME_DURATION),
             TimerMode::Repeating,

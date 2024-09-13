@@ -36,8 +36,8 @@ bevy-inspector-egui = "0.25.2"
 bevy_asset_loader = "0.21.0"
 bevy_common_assets = { version = "0.11.0", features = ["ron"] }
 bevy_ecs_tilemap = { git = "https://github.com/StarArawn/bevy_ecs_tilemap", branch = "main" }
-bevy_ineffable = "0.6.0"
 bevy_kira_audio = { version = "0.20.0", default-features = false, features = ["mp3", "settings_loader"] }
+bevy_light_2d = "0.3.0"
 iyes_perf_ui = "0.3.0"
 serde = "1.0.209"
 sickle_ui = { git = "https://github.com/UmbraLuminosa/sickle_ui", branch = "main" }

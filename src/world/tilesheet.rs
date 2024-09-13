@@ -1,8 +1,19 @@
 use super::*;
 
+#[derive(Debug, Clone, Reflect, serde::Deserialize)]
+pub struct LightEmitterSettings {
+    pub color: Color,
+    pub intensity: f32,
+    pub radius: f32,
+    pub falloff: f32,
+    pub cast_shadows: bool,
+}
+
 #[derive(Component, Debug, Clone, Reflect, serde::Deserialize)]
 pub struct Tilesheet {
     pub spritesheet: Spritesheet,
+    pub lights: HashMap<SpritesheetCellIdentifier, LightEmitterSettings>,
+    pub occluders: Vec<SpritesheetCellIdentifier>,
 }
 
 #[derive(Debug, Clone, Reflect, serde::Deserialize, Asset)]

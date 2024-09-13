@@ -2,7 +2,7 @@ use super::*;
 
 type SpritesheetCellLocation = (u32, u32);
 
-#[derive(Debug, Clone, Reflect, serde::Deserialize)]
+#[derive(Hash, Eq, PartialEq, Debug, Clone, Reflect, serde::Deserialize)]
 #[serde(untagged)]
 pub enum SpritesheetCellIdentifier {
     Position(SpritesheetCellLocation),
