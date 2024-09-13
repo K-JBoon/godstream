@@ -1,5 +1,4 @@
 use super::*;
-use bevy::color::palettes::css::YELLOW;
 
 static TILE_ANIMATION_FRAME_DURATION: u64 = 250;
 
@@ -84,6 +83,13 @@ impl Stage {
                     let grid_size = tile_size.into();
                     let map_type = TilemapType::default();
 
+                    let layer_offset = Transform::from_xyz(
+                        layer.x_offset
+                        * tilesheet.spritesheet.tile_width,
+                        layer.y_offset
+                        * tilesheet.spritesheet.tile_height,
+                        1.0);
+
                     layer.cells.iter().enumerate().for_each(|(y, row)| {
                         row.iter().enumerate().for_each(|(x, cell_identifier)| {
                             // Make sure we don't go out of bounds if the data has been
@@ -122,41 +128,56 @@ impl Stage {
                                                 cell_identifiers: cell_identifiers.clone(),
                                                 index: 0,
                                             });
-                                            let tile_position_world_space =
-                                                tile_pos.center_in_world(&grid_size, &map_type);
-
-                                            commands.spawn((PointLight2dBundle {
-                                                point_light: PointLight2d {
-                                                    radius: 48.0,
-                                                    color: Color::Srgba(YELLOW),
-                                                    intensity: 9.0,
-                                                    falloff: 4.0,
-                                                    ..default()
-                                                },
-                                                transform: Transform::from_xyz(
-                                                    tile_position_world_space.x,
-                                                    tile_position_world_space.y,
-                                                    layer_index as f32,
-                                                ) * Transform::from_xyz(
-                                                    layer.x_offset
-                                                        * tilesheet.spritesheet.tile_width,
-                                                    layer.y_offset
-                                                        * tilesheet.spritesheet.tile_height,
-                                                    1.0,
-                                                ) * Transform::from_xyz(
-                                                    -0.5 * map_size.x as f32
-                                                        * tilesheet.spritesheet.tile_width,
-                                                    -0.5 * map_size.y as f32
-                                                        * tilesheet.spritesheet.tile_height,
-                                                    1.0,
-                                                ) * Transform::from_xyz(
-                                                    0.5 * tilesheet.spritesheet.tile_width,
-                                                    0.5 * tilesheet.spritesheet.tile_height,
-                                                    1.0,
-                                                ),
-                                                ..default()
-                                            },));
                                         }
+                                    }
+
+                                    let tile_position_world_space =
+                                        tile_pos.center_in_world(&grid_size, &map_type);
+                                    let tile_transform = 
+                                            Transform::from_xyz(
+                                                tile_position_world_space.x,
+                                                tile_position_world_space.y,
+                                                layer_index as f32,
+                                            ) * layer_offset
+                                            * Transform::from_xyz(
+                                                -0.5 * map_size.x as f32
+                                                * tilesheet.spritesheet.tile_width,
+                                                -0.5 * map_size.y as f32
+                                                * tilesheet.spritesheet.tile_height,
+                                                1.0,
+                                            ) * Transform::from_xyz(
+                                                0.5 * tilesheet.spritesheet.tile_width,
+                                                0.5 * tilesheet.spritesheet.tile_height,
+                                                1.0,
+                                            );
+
+                                    if let Some(light_settings) = tilesheet.lights.get(cell_identifier) {
+                                        // TODO: this math can probably be simplified,
+                                        // need to study the bevy_ecs_tilemap API better
+
+                                        commands.spawn((PointLight2dBundle {
+                                            point_light: PointLight2d {
+                                                radius: light_settings.radius,
+                                                color: light_settings.color,
+                                                intensity: light_settings.intensity,
+                                                falloff: light_settings.falloff,
+                                                ..default()
+                                            },
+                                            transform: tile_transform,
+                                            ..default()
+                                        },));
+                                    }
+
+                                    if tilesheet.occluders.contains(cell_identifier) {
+                                        commands.spawn(LightOccluder2dBundle {
+                                            light_occluder: LightOccluder2d {
+                                                shape: LightOccluder2dShape::Rectangle {
+                                                    half_size: Vec2::new(tilesheet.spritesheet.tile_width / 2.0, tilesheet.spritesheet.tile_height / 2.0),
+                                                },
+                                            },
+                                            transform: tile_transform,
+                                            ..default()
+                                        });
                                     }
                                 }
                             }
